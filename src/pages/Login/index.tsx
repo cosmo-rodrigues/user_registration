@@ -1,4 +1,4 @@
-import dotenv from 'dotenv';
+// import dotenv from 'dotenv';
 import {
   CenterLine,
   DividerLine,
@@ -12,8 +12,8 @@ import {
 } from './styles';
 import { LoginForm } from './LoginForm';
 
-dotenv.config();
-
+// dotenv.config();
+console.log(process.env.REACT_APP_OAUTH_GOOGLE_URL);
 export function Login() {
   const google = () => {
     window.open(process.env.REACT_APP_OAUTH_GOOGLE_URL, '_self');
