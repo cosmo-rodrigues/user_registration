@@ -16,8 +16,8 @@ export function AppRoutes() {
   const { user, setUser } = useContext(AuthContext);
 
   useEffect(() => {
-    const getUser = () => {
-      fetch(`${process.env.REACT_APP_CHECK_LOGGED_URL}`, {
+    const getUser = async () => {
+      await fetch(`${process.env.REACT_APP_CHECK_LOGGED_URL}`, {
         method: 'GET',
         credentials: 'include',
         headers: {
@@ -26,10 +26,7 @@ export function AppRoutes() {
           'Access-Control-Allow-Credentials': 'true',
         },
       })
-        .then((response) => {
-          if (response.status === 200) return response.json();
-          throw new Error('Falha na autenticação');
-        })
+        .then((response) => response.json())
         .then((resObject) => {
           setUser(resObject.user);
         })
