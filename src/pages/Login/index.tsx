@@ -1,3 +1,4 @@
+import dotenv from 'dotenv';
 import {
   CenterLine,
   DividerLine,
@@ -11,26 +12,19 @@ import {
 } from './styles';
 import { LoginForm } from './LoginForm';
 
+dotenv.config();
+
 export function Login() {
   const google = () => {
-    window.open(
-      'https://registration-user-api.herokuapp.com/auth/google',
-      '_self'
-    );
+    window.open(process.env.REACT_APP_OAUTH_GOOGLE_URL, '_self');
   };
 
   const github = () => {
-    window.open(
-      'https://registration-user-api.herokuapp.com/auth/github',
-      '_self'
-    );
+    window.open(process.env.REACT_APP_OAUTH_GITHUB_URL, '_self');
   };
 
   const facebook = () => {
-    window.open(
-      'https://registration-user-api.herokuapp.com/auth/facebook',
-      '_self'
-    );
+    window.open(process.env.REACT_APP_OAUTH_FACEBOOK_URL, '_self');
   };
 
   return (
