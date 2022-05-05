@@ -1,35 +1,38 @@
+// @ts-nocheck
 import {
   createContext,
   Dispatch,
   ReactNode,
   SetStateAction,
+  useEffect,
   useState,
 } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { usePersistedState } from '../../hooks/usePersistedState';
 
 export interface IUser {
-  email: string;
-  credential: string | number;
-  authenticated?: boolean;
+  id: string;
+  displayName: string;
+  photos: string[];
 }
 
 interface IAuth {
   user: IUser;
   setUser: Dispatch<SetStateAction<IUser>>;
-  login: (email: string, credential: string | number) => void;
+  login: (user: IUser) => void;
   logout: () => void;
 }
 
 const DEFAULT_USER_INFOS = {
-  email: '',
-  credential: '',
-  authenticated: false,
+  id: '',
+  displayName: '',
+  photos: [],
 };
 
 const AUTH_CONTEXT_DEFAULT_VALUES = {
   user: DEFAULT_USER_INFOS,
   setUser: (user: IUser) => user,
-  login: () => null,
+  login: (user: IUser) => null,
   logout: () => null,
 };
 
@@ -39,10 +42,11 @@ export const AuthContext = createContext<IAuth>(
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState({} as IUser);
+  const [storedUser, setUserLocalStorage] = usePersistedState('user', user);
   const navigate = useNavigate();
 
-  function login(email: string, credential: string | number) {
-    setUser({ email, credential });
+  function login(userCredentials: IUser) {
+    setUser(userCredentials);
     navigate('/');
   }
 
@@ -51,6 +55,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     navigate('/login');
   }
 
+  useEffect(() => {
+    setUserLocalStorage(user);
+  }, [user]);
+
   return (
     <AuthContext.Provider
       value={{
@@ -58,6 +66,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUser,
         login,
         logout,
+        storedUser,
+        setUserLocalStorage,
       }}
     >
       {children}

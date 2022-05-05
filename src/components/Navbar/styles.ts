@@ -60,7 +60,13 @@ export const HeaderContent = styled.div`
     }
   }
 
-  > img {
+  > div {
+    align-items: center;
+    display: flex;
     margin-left: auto;
+
+    img {
+      max-width: 45px;
+    }
   }
 `;
