@@ -11,7 +11,6 @@ import {
 } from './styles';
 import { LoginForm } from './LoginForm';
 
-console.log(process.env.REACT_APP_OAUTH_GOOGLE_URL);
 export function Login() {
   const google = () => {
     window.open(process.env.REACT_APP_OAUTH_GOOGLE_URL, '_self');

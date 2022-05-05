@@ -35,10 +35,12 @@ export function Navbar() {
         </nav>
         {storedUser.id && (
           <div>
-            <img src={setUserImageAvatar()} alt='avatar' />
-            <Typography style={{ marginLeft: '10px' }} variant='p'>
+            <Typography variant='p'>Bem vindo,</Typography>
+            <Typography style={{ margin: '0 10px' }} variant='p'>
               {storedUser.name.givenName}
             </Typography>
+            <img src={setUserImageAvatar()} alt='avatar' />
+
             <Button
               variant='contained'
               color='secondary'
