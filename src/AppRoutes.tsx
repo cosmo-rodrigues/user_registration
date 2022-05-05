@@ -1,5 +1,5 @@
 import { useContext, useEffect } from 'react';
-import { Route, Routes } from 'react-router-dom';
+import { Route, Routes, useNavigate } from 'react-router-dom';
 
 // import { About } from './pages/about';
 // import { Contact } from './pages/contact';
@@ -14,6 +14,7 @@ import { SignUp } from './pages/SignUp';
 
 export function AppRoutes() {
   const { user, setUser } = useContext(AuthContext);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const getUser = async () => {
@@ -26,13 +27,15 @@ export function AppRoutes() {
           'Access-Control-Allow-Credentials': 'true',
         },
       })
-        .then((response) => response.json())
-        .then((resObject) => {
-          setUser(resObject.user);
+        .then((result) => result.json())
+        .then((data) => {
+          if (data.success) {
+            setUser(data.user);
+            return navigate('/');
+          }
+          throw new Error('Falha na autenticação!');
         })
-        .catch((err) => {
-          console.log(err);
-        });
+        .catch((err) => console.log(err));
     };
     getUser();
   }, []);

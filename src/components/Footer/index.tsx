@@ -10,8 +10,12 @@ export function Footer() {
         {...props}
       >
         {'Copyright © '}
-        <Link color='inherit' href='https://mui.com/'>
-          Your Website
+        <Link
+          color='inherit'
+          href='https://github.com/cosmo-rodrigues'
+          target='_blank'
+        >
+          Cosmo Rodrigues
         </Link>{' '}
         {new Date().getFullYear()}
         {'.'}

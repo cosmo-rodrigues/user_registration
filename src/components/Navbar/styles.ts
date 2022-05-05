@@ -66,6 +66,7 @@ export const HeaderContent = styled.div`
     margin-left: auto;
 
     img {
+      border-radius: 20px;
       max-width: 45px;
     }
   }

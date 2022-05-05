@@ -51,10 +51,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   function logout() {
-    window.open(
-      'https://registration-user-api.herokuapp.com/auth/logout',
-      '_self'
-    );
+    window.open(process.env.REACT_APP_LOGOUT_URL, '_self');
     setUser(DEFAULT_USER_INFOS);
     navigate('/login');
   }

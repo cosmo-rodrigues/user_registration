@@ -1,13 +1,20 @@
 // @ts-nocheck
 // import { ThemeSwitcher } from './components/ThemeSwitcher';
 import { HeaderContainer, HeaderContent } from './styles';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import { AuthContext } from '../../context/Auth';
 import { useContext } from 'react';
 import { Button, Typography } from '@mui/material';
 
 export function Navbar() {
-  const { storedUser } = useContext(AuthContext);
+  const params = useLocation().pathname;
+  const { storedUser, logout } = useContext(AuthContext);
+
+  function shouldShowLoginButton() {
+    const local = params.split('/')[1];
+    if (local !== 'login') return true;
+    return false;
+  }
 
   function setUserImageAvatar() {
     if (storedUser.id) {
@@ -29,15 +36,28 @@ export function Navbar() {
         {storedUser.id && (
           <div>
             <img src={setUserImageAvatar()} alt='avatar' />
-            <Typography variant='p'>{storedUser.displayName}</Typography>
+            <Typography style={{ marginLeft: '10px' }} variant='p'>
+              {storedUser.name.givenName}
+            </Typography>
             <Button
               variant='contained'
               color='secondary'
               style={{ marginLeft: '12px' }}
+              onClick={logout}
             >
               Logout
             </Button>
           </div>
+        )}
+        {shouldShowLoginButton() && !storedUser.id && (
+          <Button
+            variant='contained'
+            color='secondary'
+            style={{ marginLeft: '12px' }}
+            onClick={logout}
+          >
+            Login
+          </Button>
         )}
         {/* <ThemeSwitcher /> */}
       </HeaderContent>
