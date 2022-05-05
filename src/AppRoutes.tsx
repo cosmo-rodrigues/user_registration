@@ -17,7 +17,7 @@ export function AppRoutes() {
 
   useEffect(() => {
     const getUser = () => {
-      fetch('https://registration-user-api.herokuapp.com/auth/login/success', {
+      fetch(`${process.env.REACT_APP_CHECK_LOGGED_URL}`, {
         method: 'GET',
         credentials: 'include',
         headers: {
