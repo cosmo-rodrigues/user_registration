@@ -4,36 +4,37 @@ import {
   Dispatch,
   ReactNode,
   SetStateAction,
-  useEffect,
   useState,
 } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { usePersistedState } from '../../hooks/usePersistedState';
-
-export interface IUser {
-  id: string;
-  displayName: string;
-  photos: string[];
-}
+import { IUserCredentialsCredentials, IUserInfo } from '../../dtos';
 
 interface IAuth {
-  user: IUser;
-  setUser: Dispatch<SetStateAction<IUser>>;
-  login: (user: IUser) => void;
+  user: IUserInfo;
+  setUser: Dispatch<SetStateAction<IUserCredentials>>;
+  login: (user: IUserCredentials) => void;
   logout: () => void;
+  handleUserData: ({}) => void;
 }
 
 const DEFAULT_USER_INFOS = {
   id: '',
-  displayName: '',
-  photos: [],
+  name: '',
+  email: '',
+  role: '',
+  cpf: '',
+  pis: '',
+  addressId: '',
+  address: '',
+  photo: '',
 };
 
 const AUTH_CONTEXT_DEFAULT_VALUES = {
   user: DEFAULT_USER_INFOS,
-  setUser: (user: IUser) => user,
-  login: (user: IUser) => null,
+  setUser: (user: IUserCredentials) => user,
+  login: (user: IUserCredentials) => null,
   logout: () => null,
+  handleUserData: ({}) => null,
 };
 
 export const AuthContext = createContext<IAuth>(
@@ -41,11 +42,10 @@ export const AuthContext = createContext<IAuth>(
 );
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState({} as IUser);
-  const [storedUser, setUserLocalStorage] = usePersistedState('user', user);
+  const [user, setUser] = useState({} as IUserCredentials);
   const navigate = useNavigate();
 
-  function login(userCredentials: IUser) {
+  function login(userCredentials: IUserCredentialsCredentials) {
     setUser(userCredentials);
     navigate('/');
   }
@@ -56,19 +56,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     navigate('/login');
   }
 
-  useEffect(() => {
-    setUserLocalStorage(user);
-  }, [user]);
+  function handleUserData(data: IUserCredentials) {
+    console.log(data);
+    const dataUpdated = { ...data };
+    if (data.displayName) {
+      dataUpdated.name = data.displayName;
+    }
+    if (data.photos) {
+      dataUpdated.photo = data.photos[0].value;
+      delete data.photos;
+    }
+    if (!data.photo) dataUpdated.photo = './favicon.png';
+    setUser(dataUpdated);
+  }
 
   return (
     <AuthContext.Provider
       value={{
-        user,
-        setUser,
+        handleUserData,
         login,
         logout,
-        storedUser,
-        setUserLocalStorage,
+        user,
       }}
     >
       {children}

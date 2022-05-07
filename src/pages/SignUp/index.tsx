@@ -1,3 +1,10 @@
+import { FormRegistration } from '../../components/FormRegister';
+import { SignupContainer } from './styles';
+
 export function SignUp() {
-  return <h1>SignUp</h1>;
+  return (
+    <SignupContainer>
+      <FormRegistration />
+    </SignupContainer>
+  );
 }

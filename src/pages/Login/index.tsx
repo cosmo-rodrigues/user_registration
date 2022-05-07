@@ -10,8 +10,14 @@ import {
   SocialIcon,
 } from './styles';
 import { LoginForm } from './LoginForm';
+import { useNavigate } from 'react-router-dom';
+import { useContext, useEffect } from 'react';
+import { AuthContext } from '../../context/Auth';
 
 export function Login() {
+  const { user } = useContext(AuthContext);
+  const navigate = useNavigate();
+
   const google = () => {
     window.open(process.env.REACT_APP_OAUTH_GOOGLE_URL, '_self');
   };
@@ -23,6 +29,12 @@ export function Login() {
   const facebook = () => {
     window.open(process.env.REACT_APP_OAUTH_FACEBOOK_URL, '_self');
   };
+
+  useEffect(() => {
+    if (user?.id) {
+      return navigate('/');
+    }
+  }, [user]);
 
   return (
     <LoginContainer>

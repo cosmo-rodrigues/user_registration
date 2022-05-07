@@ -1,4 +1,4 @@
-import * as React from 'react';
+import { useContext } from 'react';
 import {
   Avatar,
   Button,
@@ -13,18 +13,39 @@ import {
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { Link as NavigateLink } from 'react-router-dom';
+import { Link as NavigateLink, useNavigate } from 'react-router-dom';
+import { loginService } from '../../services/login';
+import { AuthContext } from '../../context/Auth';
+import { toast } from 'react-toastify';
 
 const theme = createTheme();
 
 export function LoginForm() {
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const { handleUserData } = useContext(AuthContext);
+  const navigate = useNavigate();
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+
     const data = new FormData(event.currentTarget);
-    console.log({
+
+    const userCredentials = {
       email: data.get('email'),
       password: data.get('password'),
-    });
+    };
+
+    try {
+      // @ts-ignore
+      const result = await (await loginService.signIn(userCredentials)).data;
+      if (result.user) {
+        handleUserData(result.user);
+        localStorage.setItem('@ezrecord/user', JSON.stringify(result.user));
+        localStorage.setItem('@ezrecord/token', JSON.stringify(result.token));
+        return navigate('/');
+      }
+    } catch (error) {
+      toast.error('Falha ao tentar logar', { autoClose: 5000 });
+    }
   };
 
   return (

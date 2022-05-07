@@ -1,5 +1,6 @@
 import { useContext, useEffect } from 'react';
-import { Route, Routes, useNavigate } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
+import { toast, ToastContainer } from 'react-toastify';
 
 // import { About } from './pages/about';
 // import { Contact } from './pages/contact';
@@ -11,31 +12,24 @@ import { AuthContext } from './context/Auth';
 import { Home } from './pages/Home';
 import { Login } from './pages/Login';
 import { SignUp } from './pages/SignUp';
+import { loginService } from './services/login';
+
+const toastLoginId = 'af40tq3egq3';
 
 export function AppRoutes() {
-  const { user, setUser } = useContext(AuthContext);
-  const navigate = useNavigate();
+  const { user, handleUserData } = useContext(AuthContext);
 
   useEffect(() => {
     const getUser = async () => {
-      await fetch(`${process.env.REACT_APP_CHECK_LOGGED_URL}`, {
-        method: 'GET',
-        credentials: 'include',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-          'Access-Control-Allow-Credentials': 'true',
-        },
-      })
-        .then((result) => result.json())
-        .then((data) => {
-          if (data.success) {
-            setUser(data.user);
-            return navigate('/');
-          }
-          throw new Error('Falha na autenticação!');
-        })
-        .catch((err) => console.log(err));
+      try {
+        const result = await (await loginService.signInSocial()).data;
+        handleUserData(result.user);
+      } catch (error: any) {
+        toast.error('Usuário não encontrado', {
+          autoClose: 3000,
+          toastId: toastLoginId,
+        });
+      }
     };
     getUser();
   }, []);
@@ -59,6 +53,7 @@ export function AppRoutes() {
         {/* <Route path='/contact' element={<Contact />} /> */}
         {/* <Route element={<PageNotFound />} /> */}
       </Routes>
+      <ToastContainer />
     </Layout>
   );
 }
