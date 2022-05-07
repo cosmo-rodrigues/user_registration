@@ -35,7 +35,8 @@ export const LoginOptionsWrapper = styled.article`
     flex-direction: column;
     height: 97vh;
     margin-top: 10vh;
-    width: 65%;
+    max-width: 700px;
+    width: 100%;
   }
 `;
 
@@ -46,6 +47,7 @@ export const SectionSide = styled.section`
   flex-direction: column;
 
   @media (max-width: 992px) {
+    justify-content: flex-end;
     padding: 20px;
   }
 `;
@@ -58,6 +60,7 @@ export const CenterLine = styled.div`
   position: relative;
 
   @media (max-width: 992px) {
+    height: 50px;
     position: relative;
     width: 100%;
   }

@@ -7,6 +7,6 @@ interface IProps {
   user: IUserInfo;
 }
 export function Private({ children, user }: IProps) {
-  if (!user?.id) return <Navigate to='/login' />;
+  if (!user.id) return <Navigate to='/login' />;
   return <>{children}</>;
 }

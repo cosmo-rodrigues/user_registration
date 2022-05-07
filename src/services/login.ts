@@ -40,6 +40,8 @@ const isLogged = () => (getUserAuthentication() ? true : false);
 
 const getToken = () => localStorage.getItem('@ezrecord/token');
 
+const removeToken = () => localStorage.removeItem('@ezrecord/token');
+
 const isValidRoles = (currentUser = {}) => {
   ROLES.some((routeRole: string) =>
     currentUser.role === routeRole ? true : false
@@ -53,6 +55,7 @@ export const loginService = {
   isLogged,
   isValidRoles,
   isUser,
+  removeToken,
   signIn,
   signInSocial,
   signInWithCPF,

@@ -8,6 +8,7 @@ import {
 } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { IUserCredentialsCredentials, IUserInfo } from '../../dtos';
+import { loginService } from '../../services/login';
 
 interface IAuth {
   user: IUserInfo;
@@ -53,20 +54,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   function logout() {
     window.open(process.env.REACT_APP_LOGOUT_URL, '_self');
     setUser(DEFAULT_USER_INFOS);
+    loginService.removeToken();
     navigate('/login');
   }
 
   function handleUserData(data: IUserCredentials) {
-    console.log(data);
     const dataUpdated = { ...data };
+
     if (data.displayName) {
       dataUpdated.name = data.displayName;
     }
+
     if (data.photos) {
       dataUpdated.photo = data.photos[0].value;
-      delete data.photos;
     }
-    if (!data.photo) dataUpdated.photo = './favicon.png';
+
+    if (data.avatar_url) {
+      dataUpdated.photo = data.avatar_url;
+    }
+
+    if (!dataUpdated.photo) {
+      dataUpdated.photo = './favicon.png';
+    }
+
     setUser(dataUpdated);
   }
 
