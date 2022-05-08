@@ -26,14 +26,14 @@ const checkCurrentUserRole = (sourceName: string) =>
 const signIn = (user: IUserEmailCredential) =>
   post({ type: 'user', service: '/login', data: user });
 
-const signInSocial = () =>
-  get({ type: 'user', service: '/auth/login/success' });
-
 const signInWithCPF = (cpf: number, ref = 'cpf') =>
-  post({ type: 'user', service: `login/authentication/${cpf}?ref=${ref}` });
+  post({ type: 'user', service: `login/${cpf}?ref=${ref}` });
 
 const signInWithPIS = (pis: number, ref = 'pis') =>
-  post({ type: 'user', service: `login/authentication/${pis}?ref=${ref}` });
+  post({ type: 'user', service: `login/${pis}?ref=${ref}` });
+
+const signInSocial = () =>
+  get({ type: 'user', service: '/auth/login/success' });
 
 const signOut = () =>
   storageNames.forEach((item) => localStorage.removeItem(item.name));
