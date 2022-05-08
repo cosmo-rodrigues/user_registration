@@ -1,10 +1,10 @@
-import { FormRegistration } from '../../components/FormRegister';
+import { AddEdit } from '../../components/AddEdit';
 import { SignupContainer } from './styles';
 
 export function SignUp() {
   return (
     <SignupContainer>
-      <FormRegistration />
+      <AddEdit />
     </SignupContainer>
   );
 }

@@ -43,7 +43,7 @@ export const AuthContext = createContext<IAuth>(
 );
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState({} as IUserCredentials);
+  const [user, setUser] = useState<IUserInfo>({} as IUserInfo);
   const navigate = useNavigate();
 
   function login(userCredentials: IUserCredentialsCredentials) {
@@ -52,14 +52,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   function logout() {
-    window.open(process.env.REACT_APP_LOGOUT_URL, '_self');
+    loginService.signOut();
     setUser(DEFAULT_USER_INFOS);
-    loginService.removeToken();
+    window.open(process.env.REACT_APP_LOGOUT_URL, '_self');
     navigate('/login');
   }
 
   function handleUserData(data: IUserCredentials) {
-    const dataUpdated = { ...data };
+    const dataUpdated = { ...data, ...data?.address };
 
     if (data.displayName) {
       dataUpdated.name = data.displayName;

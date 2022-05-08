@@ -1,0 +1,21 @@
+export const DEFAULT_VALUES = {
+  id: '',
+  name: '',
+  email: '',
+  role: '',
+  cpf: '',
+  pis: '',
+  addressId: '',
+  photo: '',
+  password: '',
+  confirmPassword: '',
+  address: {
+    country: '',
+    state: '',
+    county: '',
+    zipCode: '',
+    street: '',
+    number: '',
+    complement: '',
+  },
+};

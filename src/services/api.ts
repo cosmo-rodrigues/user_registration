@@ -37,7 +37,7 @@ export const api = (type = 'user') => {
       if (config.url!.indexOf('users/login') !== -1) return config;
 
       const token = loginService.getToken();
-      if (token) config.headers!['Authorization'] = token;
+      if (token) config.headers!['Authorization'] = token.replaceAll('"', '');
       return config;
     },
     (error) => {

@@ -9,6 +9,7 @@ import { Career } from './pages/Career';
 import { Contact } from './pages/Contact';
 import { Home } from './pages/Home';
 import { Login } from './pages/Login';
+import { Profile } from './pages/Profile';
 import { Services } from './pages/Services';
 import { SignUp } from './pages/SignUp';
 import { loginService } from './services/login';
@@ -17,7 +18,7 @@ const toastLoginId = 'af40tq3egq3';
 
 export function AppRoutes() {
   const navigate = useNavigate();
-  const { user, handleUserData } = useContext(AuthContext);
+  const { handleUserData } = useContext(AuthContext);
 
   useEffect(() => {
     const getUser = async () => {
@@ -44,7 +45,7 @@ export function AppRoutes() {
           caseSensitive
           path='/'
           element={
-            <Private user={user}>
+            <Private>
               <Home />
             </Private>
           }
@@ -52,13 +53,21 @@ export function AppRoutes() {
         <Route
           path='/services'
           element={
-            <Private user={user}>
+            <Private>
               <Services />
             </Private>
           }
         />
         <Route path='/contact' element={<Contact />} />
         <Route path='/career' element={<Career />} />
+        <Route
+          path='/profile'
+          element={
+            <Private>
+              <Profile />
+            </Private>
+          }
+        />
       </Routes>
       <ToastContainer />
     </Layout>

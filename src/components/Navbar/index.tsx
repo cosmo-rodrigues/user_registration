@@ -30,7 +30,17 @@ const pages = [
     link: '/career',
   },
 ];
-const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
+
+const settings = [
+  {
+    title: 'Profile',
+    link: '/profile',
+  },
+  {
+    title: 'Apagar minha conta',
+    link: '/account',
+  },
+];
 
 export function Navbar() {
   const [anchorElUser, setAnchorElUser] = useState(null);
@@ -163,8 +173,12 @@ export function Navbar() {
                 onClose={handleCloseUserMenu}
               >
                 {settings.map((setting) => (
-                  <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                    <Typography textAlign='center'>{setting}</Typography>
+                  <MenuItem key={setting.title} onClick={handleCloseUserMenu}>
+                    <Link to={setting.link}>
+                      <Typography textAlign='center'>
+                        {setting.title}
+                      </Typography>
+                    </Link>
                   </MenuItem>
                 ))}
               </Menu>
@@ -178,7 +192,9 @@ export function Navbar() {
               </Button>
             </Box>
           ) : (
-            <Typography variant='subtitle2'>Olá visitante</Typography>
+            <Typography marginRight={10} variant='subtitle2'>
+              Olá visitante
+            </Typography>
           )}
           {shouldShowLoginButton() && !user.id && (
             <Button

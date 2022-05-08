@@ -18,6 +18,8 @@ export interface IUserInfo {
   addressId: number;
   address: IAdress;
   photo?: string;
+  password?: string;
+  confirmPassword?: string;
 }
 
 export interface IUserCredentials {

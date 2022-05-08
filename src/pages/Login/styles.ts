@@ -7,12 +7,12 @@ interface IButtonColor {
 export const LoginContainer = styled.main`
   align-items: center;
   display: flex;
-  height: calc(100vh - 50px);
+  height: calc(100vh - 80px);
   justify-content: center;
 `;
 
 export const LoginTitle = styled.h1`
-  bottom: 68vh;
+  bottom: 65vh;
   color: lightgray;
   position: absolute;
 

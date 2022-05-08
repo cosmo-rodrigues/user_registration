@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useContext } from 'react';
 import {
   Avatar,
@@ -44,7 +45,9 @@ export function LoginForm() {
         return navigate('/');
       }
     } catch (error) {
-      toast.error('Falha ao tentar logar', { autoClose: 5000 });
+      toast.error(error.response.data.message, {
+        autoClose: 5000,
+      });
     }
   };
 

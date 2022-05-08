@@ -23,24 +23,40 @@ import { userService } from '../../services/user';
 import { AuthContext } from '../../context/Auth';
 import { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { DEFAULT_VALUES } from './defaultValues';
 
-const validationSchema = Yup.object().shape({
-  name: Yup.string().required('campo obrigatório'),
-  email: Yup.string().required('campo obrigatório'),
-  password: Yup.string().required('campo obrigatório'),
-  passwordConfirmation: Yup.string().required('campo obrigatório'),
-  pis: Yup.string().required('campo obrigatório'),
-  cpf: Yup.string().required('campo obrigatório'),
-});
+const toastCustomId1 = 'fregnw984y5wr';
+const toastCustomId2 = 'fregnw984y545';
 
-const toastCustomId = 'custom-id-yes';
-
-export function FormRegistration() {
-  const [tabIndex, setTabIndex] = useState(1);
+export function AddEdit({ user = DEFAULT_VALUES }) {
   const navigate = useNavigate();
+  const [tabIndex, setTabIndex] = useState(1);
   const { handleUserData } = useContext(AuthContext);
-  const [userInfo, setUserInfo] = useState<IUserInfo>({} as IUserInfo);
+  const [userInfo, setUserInfo] = useState<IUserInfo>(user);
   const [addressInfo, setAddressInfo] = useState<IAddress>({} as IAddress);
+
+  const validationSchema = Yup.object().shape({
+    name: Yup.string()
+      .required('O nome me é obrigatório')
+      .min(3, 'O nome deve ter pelo meno 3 letras'),
+    email: Yup.string().email('Email inválido').required('Email é obrigatório'),
+    cpf: Yup.number()
+      .required()
+      .min(11, 'O CPF deve tem 11 dígitos')
+      .max(11, 'O CPF deve tem 11 dígitos'),
+    pis: Yup.number()
+      .required()
+      .min(11, 'O PIS deve tem 11 dígitos')
+      .max(11, 'O PIS deve tem 11 dígitos'),
+    password: Yup.string()
+      .concat(!user.id ? Yup.string().required('A senha é obrigatória') : '')
+      .min(8, 'A senha deve ter pelo menos 8 caracteres'),
+    confirmPassword: Yup.string()
+      .when('password', (password, schema) => {
+        if (password || !user.id) return schema.required('Confirme sua senha');
+      })
+      .oneOf([Yup.ref('password')], 'As senhas não conferem'),
+  });
 
   const handleTabChange = (_event: Event, newValue: number) => {
     setTabIndex(newValue);
@@ -58,7 +74,7 @@ export function FormRegistration() {
     setAddressInfo({ ...item });
   };
 
-  async function handleUserSubmit() {
+  async function createUser() {
     let item = userInfo;
     item.address = addressInfo;
     setUserInfo({ ...item });
@@ -66,18 +82,44 @@ export function FormRegistration() {
     try {
       const createdUser = await (await userService.create(item)).data;
       handleUserData(createdUser.user);
-      toast.success('Cadastro realizado com sucesso!', { autoClose: 2000 });
+      toast.success('Cadastro realizado com sucesso!', { autoClose: 5000 });
       navigate('/');
     } catch (error) {
       toast.error(error.response.data.message, {
         autoClose: 5000,
-        toastId: toastCustomId,
+        toastId: toastCustomId1,
       });
     }
   }
 
+  async function updateUser() {
+    let item = userInfo;
+    item.address = addressInfo;
+    setUserInfo({ ...item });
+
+    try {
+      const updatedUser = await (await userService.update(user.id, item)).data;
+      handleUserData(updatedUser.user);
+      toast.success('Dados atualizados com sucesso!', { autoClose: 5000 });
+      navigate('/');
+    } catch (error) {
+      toast.error(error.response.data.message, {
+        autoClose: 5000,
+        toastId: toastCustomId2,
+      });
+    }
+  }
+
+  function handleUserSubmit(fields: IUserInfo) {
+    if (!user.id) {
+      createUser(fields);
+    } else {
+      updateUser(user.id, fields);
+    }
+  }
+
   return (
-    <Box sx={{ width: '100%' }}>
+    <Box sx={{ width: '90%' }}>
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
         <Tabs
           value={tabIndex}
@@ -91,7 +133,7 @@ export function FormRegistration() {
         </Tabs>
       </Box>
       <Box>
-        <Formik initialValues={{}} validationSchema={validationSchema}>
+        <Formik initialValues={userInfo} validationSchema={validationSchema}>
           {({
             errors,
             handleBlur,
@@ -134,8 +176,12 @@ export function FormRegistration() {
                       Dados Pessoais
                     </Typography>
 
-                    <Grid container spacing={6}>
-                      <Grid item xs={12}>
+                    <Grid
+                      container
+                      spacing={2}
+                      style={{ marginTop: '10px', marginBottom: '10px' }}
+                    >
+                      <Grid item xs={12} md={6}>
                         <TextField
                           name='name'
                           label='Nome*'
@@ -145,13 +191,14 @@ export function FormRegistration() {
                           helperText={touched.name && errors.name}
                           onBlur={handleBlur}
                           onChange={(e) => {
+                            handleChange(e);
                             setFieldValue('name', e.target.value);
                             onChangeProfile('name', e.target.value);
                           }}
                         />
                       </Grid>
 
-                      <Grid item xs={12}>
+                      <Grid item xs={12} md={6}>
                         <TextField
                           name='email'
                           label='Email*'
@@ -163,6 +210,7 @@ export function FormRegistration() {
                           onBlur={handleBlur}
                           onChange={(e) => {
                             handleChange(e);
+                            setFieldValue('email', e.target.value);
                             onChangeProfile('email', e.target.value);
                           }}
                         />
@@ -185,6 +233,7 @@ export function FormRegistration() {
                           onBlur={handleBlur}
                           onChange={(e) => {
                             handleChange(e);
+                            setFieldValue('pis', +e.target.value);
                             onChangeProfile('pis', +e.target.value);
                           }}
                         />
@@ -199,53 +248,64 @@ export function FormRegistration() {
                           helperText={touched.cpf && errors.cpf}
                           onBlur={handleBlur}
                           onChange={(e) => {
+                            handleChange(e);
                             setFieldValue('cpf', e.target.value);
                             onChangeProfile('cpf', +e.target.value);
                           }}
                         />
                       </Grid>
-                      <Grid item md={6} xs={12}>
-                        <TextField
-                          name='password'
-                          label='Senha*'
-                          value={values.password || ''}
-                          error={Boolean(touched.password && errors.password)}
-                          helperText={touched.password && errors.password}
-                          onBlur={handleBlur}
-                          fullWidth
-                          onChange={(e) => {
-                            setFieldValue('password', e.target.value);
-                            onChangeProfile('password', e.target.value);
-                          }}
-                        />
-                      </Grid>
-                      <Grid item md={6} xs={12}>
-                        <TextField
-                          name='passwordConfirmation'
-                          label='Confirme sua senha*'
-                          value={values.passwordConfirmation || ''}
-                          error={Boolean(
-                            touched.passwordConfirmation &&
-                              errors.passwordConfirmation
-                          )}
-                          helperText={
-                            touched.passwordConfirmation &&
-                            errors.passwordConfirmation
-                          }
-                          onBlur={handleBlur}
-                          fullWidth
-                          onChange={(e) => {
-                            setFieldValue(
-                              'passwordConfirmation',
-                              e.target.value
-                            );
-                            onChangeProfile(
-                              'passwordConfirmation',
-                              e.target.value
-                            );
-                          }}
-                        />
-                      </Grid>
+                      {!user.id ? (
+                        <>
+                          <Grid item md={6} xs={12}>
+                            <TextField
+                              name='password'
+                              type='password'
+                              label='Senha*'
+                              value={values.password || ''}
+                              error={Boolean(
+                                touched.password && errors.password
+                              )}
+                              helperText={touched.password && errors.password}
+                              onBlur={handleBlur}
+                              fullWidth
+                              onChange={(e) => {
+                                handleChange(e);
+                                setFieldValue('password', e.target.value);
+                                onChangeProfile('password', e.target.value);
+                              }}
+                            />
+                          </Grid>
+                          <Grid item md={6} xs={12}>
+                            <TextField
+                              name='passwordConfirmation'
+                              type='password'
+                              label='Confirme sua senha*'
+                              value={values.passwordConfirmation || ''}
+                              error={Boolean(
+                                touched.passwordConfirmation &&
+                                  errors.passwordConfirmation
+                              )}
+                              helperText={
+                                touched.passwordConfirmation &&
+                                errors.passwordConfirmation
+                              }
+                              onBlur={handleBlur}
+                              fullWidth
+                              onChange={(e) => {
+                                handleChange(e);
+                                setFieldValue(
+                                  'passwordConfirmation',
+                                  e.target.value
+                                );
+                                onChangeProfile(
+                                  'passwordConfirmation',
+                                  e.target.value
+                                );
+                              }}
+                            />
+                          </Grid>
+                        </>
+                      ) : null}
                     </Grid>
                     <Alert mt={2} mb={1} severity='info'>
                       *Campos obrigatórios
@@ -280,6 +340,7 @@ export function FormRegistration() {
                           onBlur={handleBlur}
                           onChange={(e) => {
                             handleChange(e);
+                            setFieldValue('country', e.target.value);
                             onChangeAddress('country', e.target.value);
                           }}
                         />
@@ -296,6 +357,7 @@ export function FormRegistration() {
                           onBlur={handleBlur}
                           onChange={(e) => {
                             handleChange(e);
+                            setFieldValue('state', e.target.value);
                             onChangeAddress('state', e.target.value);
                           }}
                         />
@@ -312,6 +374,7 @@ export function FormRegistration() {
                           onBlur={handleBlur}
                           onChange={(e) => {
                             handleChange(e);
+                            setFieldValue('zipCode', e.target.value);
                             onChangeAddress('zipCode', e.target.value);
                           }}
                         />
@@ -334,6 +397,7 @@ export function FormRegistration() {
                           onBlur={handleBlur}
                           onChange={(e) => {
                             handleChange(e);
+                            setFieldValue('county', e.target.value);
                             onChangeAddress('county', e.target.value);
                           }}
                         />
@@ -348,6 +412,7 @@ export function FormRegistration() {
                           helperText={touched.street && errors.street}
                           onBlur={handleBlur}
                           onChange={(e) => {
+                            handleChange(e);
                             setFieldValue('street', e.target.value);
                             onChangeAddress('street', e.target.value);
                           }}
@@ -363,6 +428,7 @@ export function FormRegistration() {
                           onBlur={handleBlur}
                           fullWidth
                           onChange={(e) => {
+                            handleChange(e);
                             setFieldValue('number', e.target.value);
                             onChangeAddress('number', e.target.value);
                           }}
@@ -380,6 +446,7 @@ export function FormRegistration() {
                           onBlur={handleBlur}
                           fullWidth
                           onChange={(e) => {
+                            handleChange(e);
                             setFieldValue('complement', e.target.value);
                             onChangeAddress('complement', e.target.value);
                           }}
@@ -434,7 +501,7 @@ export function FormRegistration() {
                   marginTop: '15px',
                 }}
               >
-                Cadastrar
+                {!user.id ? 'Cadastrar' : 'Atualizar'}
               </Button>
             </form>
           )}
