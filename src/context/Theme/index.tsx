@@ -19,8 +19,11 @@ export const ThemeContext = createContext<ITheme>(
 ) as any;
 
 export function UserThemeProvider({ children }: { children: ReactNode }) {
-  const [theme, setTheme] = usePersistedState<DefaultTheme>('theme', light);
-  const [checked, setChecked] = usePersistedState('checked', false);
+  const [theme, setTheme] = usePersistedState<DefaultTheme>(
+    '@ezrecord/theme',
+    light
+  );
+  const [checked, setChecked] = usePersistedState('@ezrecord/checked', false);
 
   const toggleTheme = () => {
     if (theme.title === 'light') {

@@ -5,6 +5,7 @@ import { toast, ToastContainer } from 'react-toastify';
 import { Layout } from './components/Layout';
 import { Private } from './components/Private';
 import { AuthContext } from './context/Auth';
+import { Account } from './pages/Account';
 import { Career } from './pages/Career';
 import { Contact } from './pages/Contact';
 import { Home } from './pages/Home';
@@ -65,6 +66,14 @@ export function AppRoutes() {
           element={
             <Private>
               <Profile />
+            </Private>
+          }
+        />
+        <Route
+          path='/account'
+          element={
+            <Private>
+              <Account />
             </Private>
           }
         />

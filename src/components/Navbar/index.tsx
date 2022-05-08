@@ -174,7 +174,12 @@ export function Navbar() {
               >
                 {settings.map((setting) => (
                   <MenuItem key={setting.title} onClick={handleCloseUserMenu}>
-                    <Link to={setting.link}>
+                    <Link
+                      to={setting.link}
+                      style={{
+                        textDecoration: 'none',
+                      }}
+                    >
                       <Typography textAlign='center'>
                         {setting.title}
                       </Typography>

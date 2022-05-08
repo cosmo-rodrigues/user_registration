@@ -5,6 +5,8 @@ import { ROLES } from './constants';
 const storageNames = [
   { name: '@ezrecord/user', keyData: 'user', isJson: true },
   { name: '@ezrecord/token', keyData: 'token', isJson: false },
+  { name: '@ezrecord/theme', keyData: 'theme', isJson: true },
+  { name: '@ezrecord/checked', keyData: 'checked', isJson: false },
 ];
 
 interface IUserEmailCredential {

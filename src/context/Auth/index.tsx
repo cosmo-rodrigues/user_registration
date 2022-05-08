@@ -52,10 +52,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   function logout() {
+    navigate('/login');
     loginService.signOut();
     setUser(DEFAULT_USER_INFOS);
     window.open(process.env.REACT_APP_LOGOUT_URL, '_self');
-    navigate('/login');
   }
 
   function handleUserData(data: IUserCredentials) {

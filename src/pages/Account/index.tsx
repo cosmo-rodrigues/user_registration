@@ -1,6 +1,5 @@
 // @ts-nocheck
 import { useContext, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 import {
   Button,
@@ -18,30 +17,28 @@ import { Close } from '@mui/icons-material';
 
 export function Account() {
   const [open, setOpen] = useState(true);
-  const { user } = useContext(AuthContext);
-  const navigate = useNavigate();
+  const { user, logout } = useContext(AuthContext);
 
   const handleRemove = async () => {
     try {
       window.alert('Realente deseja excluir sua conta?');
       await userService.remove(user.id);
-      navigate('/login');
+      logout();
     } catch (error) {
+      setOpen(true);
       toast.error(error.response.data.message, {
         autoClose: 5000,
       });
     }
   };
 
-  const handleClose = () => setOpen(!open);
-
   return (
-    <Dialog open={open} onClose={handleClose} maxWidth='md'>
+    <Dialog open={open} onClose={() => setOpen(false)} maxWidth='md'>
       <DialogTitle>
         <Typography>Deletar minha conta</Typography>
         <IconButton
           aria-label='close'
-          onClick={handleClose}
+          onClick={() => setOpen(false)}
           sx={{
             position: 'absolute',
             right: 8,
